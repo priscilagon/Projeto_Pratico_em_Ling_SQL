@@ -327,7 +327,7 @@ ORDER BY idade;
 - **Detalhes**:
     - `NOT IN (SELECT DISTINCT id_paciente ... WHERE YEAR(data_aplicacao) = YEAR(CURDATE()))` exclui pacientes que já tomaram ao menos uma dose no ano corrente.
     - `TIMESTAMPDIFF(...) BETWEEN 0 AND 5` filtra por crianças de até 5 anos.
-    - O resultado é um conjunto de pacientes com idade, contato e endereço, prontos para serem chamados ou visitados.[^6][^10]
+    - O resultado é um conjunto de pacientes com idade, contato e endereço, prontos para serem chamados ou visitados.
 
 ***
 
@@ -360,12 +360,12 @@ ORDER BY
     END;
 ```
 
-- **Objetivo**: consolidar quantos pacientes foram vacinados por faixa etária nos últimos 30 dias.[^5][^9]
+- **Objetivo**: consolidar quantos pacientes foram vacinados por faixa etária nos últimos 30 dias.
 - **Como funciona**:
     - `CASE` define faixas etárias a partir da idade calculada de cada paciente.
     - Filtra apenas aplicações dos últimos 30 dias com `WHERE a.data_aplicacao >= DATE_SUB(...)`.
     - `COUNT(*)` conta doses; `COUNT(DISTINCT p.id_paciente)` conta pessoas únicas, evitando que o mesmo paciente seja contado várias vezes por ter várias doses.
-    - `ORDER BY CASE ...` organiza a exibição das faixas na ordem lógica (0–1, 1–4, 5–11, etc.).[^10][^6]
+    - `ORDER BY CASE ...` organiza a exibição das faixas na ordem lógica (0–1, 1–4, 5–11, etc.).
 
 ***
 
@@ -386,12 +386,12 @@ HAVING estoque_restante = 0 OR DATEDIFF(l.data_validade, CURDATE()) <= 30
 ORDER BY l.data_validade ASC;
 ```
 
-- **Objetivo**: monitorar lotes de vacinas que estão acabando ou perto de vencer.[^5][^9]
+- **Objetivo**: monitorar lotes de vacinas que estão acabando ou perto de vencer.
 - **Detalhes**:
     - `quantidade_disponivel` mostra o estoque atual do lote.
     - A subconsulta `SELECT COUNT(*) ...` conta quantas doses do lote já foram aplicadas.
     - `HAVING estoque_restante = 0` mostra lotes esgotados; `DATEDIFF(l.data_validade, CURDATE()) <= 30` mostra lotes que vencem em até 30 dias.
-    - `ORDER BY l.data_validade ASC` prioriza os lotes que vencem primeiro na lista.[^6][^10]
+    - `ORDER BY l.data_validade ASC` prioriza os lotes que vencem primeiro na lista.
 
 ***
 
@@ -412,12 +412,12 @@ GROUP BY c.id_cargo, c.nome_cargo
 ORDER BY total_aplicacoes DESC;
 ```
 
-- **Objetivo**: analisar a produtividade por tipo de cargo (ex.: enfermeiros, técnicos, médicos).[^7][^3]
+- **Objetivo**: analisar a produtividade por tipo de cargo (ex.: enfermeiros, técnicos, médicos).
 - **Detalhes**:
     - `COUNT(DISTINCT pr.id_profissional)` conta quantos profissionais há em cada cargo.
     - `COUNT(a.id_aplicacao)` conta o total de aplicações daquele cargo nos últimos 30 dias.
     - `LEFT JOIN` garante que cargos sem aplicações também apareçam (com `NULL` em `a`).
-    - A linha `AVG(COUNT(...)) / ...` calcula, em média, quantas doses cada profissional desse cargo aplicou no período.[^10][^6]
+    - A linha `AVG(COUNT(...)) / ...` calcula, em média, quantas doses cada profissional desse cargo aplicou no período.
 
 ***
 
@@ -434,12 +434,12 @@ GROUP BY data_aplicacao
 ORDER BY data_aplicacao DESC;
 ```
 
-- **Objetivo**: produzir um “dashboard” de vacinação diária dos últimos 7 dias.[^5][^9]
+- **Objetivo**: produzir um “dashboard” de vacinação diária dos últimos 7 dias.
 - **Detalhes**:
     - `WHERE data_aplicacao >= DATE_SUB(..., INTERVAL 7 DAY)` filtra apenas os últimos 7 dias de aplicação.
     - `GROUP BY data_aplicacao` cria uma linha por dia.
     - `COUNT(*)` mostra o volume de doses; `COUNT(DISTINCT id_paciente)` mostra quantos pacientes únicos foram atendidos por dia.
-    - `ORDER BY data_aplicacao DESC` prioriza os dias mais recentes na lista.[^6][^10]
+    - `ORDER BY data_aplicacao DESC` prioriza os dias mais recentes na lista.
 
 ***
 
@@ -468,32 +468,7 @@ HAVING dias_atraso > 180;
     - `WHERE v.nome_vacina LIKE '%Covid%'` filtra apenas vacinas de Covid.
     - `MAX(a.dose)` e `MAX(a.data_aplicacao)` pegam a dose mais recente e data mais recente de cada paciente.
     - `DATEDIFF(CURDATE(), MAX(...))` calcula quantos dias se passaram desde a última dose.
-    - `GROUP BY` separa por paciente e tipo de vacina; `HAVING dias_atraso > 180` garante que só apareçam os com mais de 180 dias sem reforço.[^10][^6]
+    - `GROUP BY` separa por paciente e tipo de vacina; `HAVING dias_atraso > 180` garante que só apareçam os com mais de 180 dias sem reforço.
 
 ***
-
-Se quiser, posso montar um **resumo em tabela** comparando objetivo, tabela principal e função mais importante de cada consulta para usar como material de aula.
-<span style="display:none">[^1][^2][^4][^8]</span>
-
-<div align="center">⁂</div>
-
-[^1]: https://www.youtube.com/watch?v=Z54BBEALMnA
-
-[^2]: https://help.tableau.com/current/pro/desktop/pt-br/functions_functions_date.htm
-
-[^3]: https://www.devmedia.com.br/exemplos-com-group-by-e-com-a-clausula-having-totalizando-dados-sql-server-2008-parte-2/19839
-
-[^4]: http://www.inf.ufsc.br/~r.mello/ine5613/sql2.doc
-
-[^5]: https://www.em.com.br/app/noticia/saude-e-bem-viver/2023/05/03/interna_bem_viver,1489207/entenda-como-os-dados-de-vacinacao-da-covid-sao-registrados.shtml
-
-[^6]: https://www.macoratti.net/14/06/tsql_tdh1.htm
-
-[^7]: https://www.homehost.com.br/blog/wordpress/group-by-sql/
-
-[^8]: https://pt.scribd.com/doc/76811327/Guia-rapido-para-consultas-SQL
-
-[^9]: https://www.monografias.ufop.br/bitstream/35400000/2853/9/MONOGRAFIA_DesenvolvimentoM%C3%B3duloVacina%C3%A7%C3%A3o.pdf
-
-[^10]: https://learn.microsoft.com/pt-br/sql/t-sql/functions/datediff-transact-sql?view=sql-server-ver17
 
