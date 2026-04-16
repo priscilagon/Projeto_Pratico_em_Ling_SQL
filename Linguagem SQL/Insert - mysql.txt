@@ -1,0 +1,61 @@
+INSERT INTO Cargo_Profissional (nome_cargo) VALUES
+('Médico'),
+('Enfermagem'),
+('Técnico de Enfermagem'),
+('Aplicador de Vacina');
+
+INSERT INTO Usuario (nome_usuario, login, senha, perfil)
+VALUES ('Ana Souza', 'ana.souza', '123456', 'profissional');
+
+INSERT INTO Profissional (nome, cpf, cns, registro_conselho, id_cargo, id_usuario)
+VALUES ('Ana Souza', '123.456.789-00', '898001234567890', 'COREN12345', 2, 1);
+
+INSERT INTO Paciente (nome, cpf, cns, data_nascimento, sexo, telefone, endereco)
+VALUES ('Carlos Lima', '987.654.321-00', '898009876543210', '2015-03-10', 'M', '(92)99999-0000', 'Manaus-AM');
+
+INSERT INTO Vacina (nome_vacina, fabricante, descricao)
+VALUES ('Influenza', 'Butantan', 'Vacina contra gripe');
+
+INSERT INTO Lote_Vacina (numero_lote, data_validade, quantidade_disponivel, id_vacina)
+VALUES ('LT2026001', '2027-12-31', 100, 1);
+
+INSERT INTO Aplicacao_Vacina (data_aplicacao, dose, via_aplicacao, local_aplicacao, observacao, id_paciente, id_profissional, id_lote)
+VALUES ('2026-04-13', '1ª dose', 'Intramuscular', 'Braço esquerdo', 'Sem intercorrências', 1, 1, 1);
+
+
+
+=================================================
+
+INSERT INTO Usuario (nome_usuario, login, senha, perfil, status) VALUES
+('Carlos Lima', 'carlos.lima', MD5('123456'), 'profissional', 'ativo'),
+('Maria Silva', 'maria.silva', MD5('123456'), 'profissional', 'ativo'),
+('João Santos', 'joao.santos', MD5('123456'), 'profissional', 'ativo'),
+('Equipe UBS', 'equipe.ubsm', MD5('admin123'), 'administrador', 'ativo');
+
+
+INSERT INTO Paciente (nome, cpf, cns, data_nascimento, sexo, telefone, endereco) VALUES
+('Maria Oliveira', '111.222.333-44', '123456789012345', '2010-05-15', 'F', '(92)99911-2222', 'Av. Brasil, 123 - Manaus/AM'),
+('Pedro Santos', '222.333.444-55', '234567890123456', '2012-08-20', 'M', '(92)99922-3333', 'R. das Flores, 456 - Manaus/AM'),
+('Ana Costa', '333.444.555-66', '345678901234567', '2008-11-10', 'F', '(92)99933-4444', 'Av. Torquato Tapajós, 789 - Manaus/AM'),
+('Lucas Ferreira', '444.555.666-77', '456789012345678', '2015-03-25', 'M', '(92)99944-5555', 'R. Rio Solimões, 101 - Manaus/AM'),
+('Julia Almeida', '555.666.777-88', '567890123456789', '2011-07-30', 'F', '(92)99955-6666', 'Av. Djalma Batista, 202 - Manaus/AM'),
+('Gabriel Rocha', '666.777.888-99', '678901234567890', '2013-12-05', 'M', '(92)99966-7777', 'R. Belo Horizonte, 303 - Manaus/AM'),
+('Sofia Mendes', '777.888.999-00', '789012345678901', '2009-02-14', 'F', '(92)99977-8888', 'Av. Constantino Nery, 404 - Manaus/AM'),
+('Mateus Barbosa', '888.999.000-11', '890123456789012', '2014-09-18', 'M', '(92)99988-9999', 'R. São Paulo, 505 - Manaus/AM'),
+('Isabela Castro', '999.000.111-22', '901234567890123', '2016-04-22', 'F', '(92)99999-0000', 'Av. Mário Ypiranga, 606 - Manaus/AM'),
+('Thiago Nunes', '000.111.222-33', '012345678901234', '2010-01-08', 'M', '(92)99800-1111', 'R. Coronel Teixeira, 707 - Manaus/AM');
+
+
+
+
+INSERT INTO Aplicacao_Vacina (data_aplicacao, dose, via_aplicacao, local_aplicacao, observacao) VALUES
+('2026-04-10', '1ª dose', 'Intramuscular', 'Braço esquerdo', 'Sem intercorrências'),  -- Ana Costa - Influenza
+('2026-04-12', '2ª dose', 'Intramuscular', 'Braço direito', 'Paciente agitado'),     -- Pedro Santos - Influenza
+('2026-04-13', '1ª dose', 'Intramuscular', 'Coxa direita', 'Ótimo'),               -- Maria Oliveira - Penta
+('2026-04-14', '2ª dose', 'Intramuscular', 'Coxa esquerda', 'Sem reações'),        -- Lucas Ferreira - Penta
+('2026-04-15', 'Reforço', 'Intramuscular', 'Braço esquerdo', 'Paciente idoso'),    -- Julia Almeida - Coronavac
+('2026-04-16', '1ª dose', 'Intramuscular', 'Braço direito', 'Primeira vez'),       -- Gabriel Rocha - Coronavac
+('2026-04-11', '3ª dose', 'Intramuscular', 'Coxa direita', 'Reforço anual'),       -- Sofia Mendes - Influenza
+('2026-04-09', '1ª dose', 'Intramuscular', 'Braço esquerdo', 'Atrasada'),          -- Mateus Barbosa - Penta
+('2026-04-17', 'Reforço', 'Intramuscular', 'Braço direito', 'Sem efeitos'),        -- Isabela Castro - Coronavac
+('2026-04-08', '2ª dose', 'Intramuscular', 'Coxa esquerda', 'No prazo');         -- Thiago Nunes - Influenza
