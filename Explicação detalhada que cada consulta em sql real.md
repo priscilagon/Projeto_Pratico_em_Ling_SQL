@@ -1,0 +1,500 @@
+<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
+
+# Explicação detalhada que cada consulta em sql realiza:
+
+-- Relatório - Para mostrar o histórico de vacinação do paciente:
+
+SELECT
+p.nome AS paciente,
+v.nome_vacina,
+a.dose,
+a.data_aplicacao,
+pr.nome AS profissional,
+c.nome_cargo,
+l.numero_lote
+FROM Aplicacao_Vacina a
+JOIN Paciente p ON a.id_paciente = p.id_paciente
+JOIN Profissional pr ON a.id_profissional = pr.id_profissional
+JOIN Cargo_Profissional c ON pr.id_cargo = c.id_cargo
+JOIN Lote_Vacina l ON a.id_lote = l.id_lote
+JOIN Vacina v ON l.id_vacina = v.id_vacina;
+
+-- 1. Relatório Geral de Aplicações (Cobertura Total)
+
+SELECT
+COUNT(*) as total_aplicacoes,
+MIN(data_aplicacao) as primeira_aplicacao,
+MAX(data_aplicacao) as ultima_aplicacao,
+DATE_FORMAT(AVG(DATEDIFF(CURDATE(), data_aplicacao)), '%d dias') as media_idade_aplicacao
+FROM Aplicacao_Vacina;
+
+-- 2. Vacinas Mais Aplicadas (Top 10)
+
+SELECT
+v.nome_vacina,
+COUNT(*) as total_doses,
+GROUP_CONCAT(DISTINCT l.numero_lote) as lotes_utilizados
+FROM Aplicacao_Vacina a
+JOIN Lote_Vacina l ON a.id_lote = l.id_lote
+JOIN Vacina v ON l.id_vacina = v.id_vacina
+GROUP BY v.id_vacina, v.nome_vacina
+ORDER BY total_doses DESC
+LIMIT 10;
+
+-- 3. Produtividade por Profissional
+
+SELECT
+pr.nome as profissional,
+c.nome_cargo,
+COUNT(*) as total_aplicacoes,
+DATE_FORMAT(MIN(a.data_aplicacao), '%d/%m/%Y') as primeiro_dia,
+DATE_FORMAT(MAX(a.data_aplicacao), '%d/%m/%Y') as ultimo_dia
+FROM Aplicacao_Vacina a
+JOIN Profissional pr ON a.id_profissional = pr.id_profissional
+JOIN Cargo_Profissional c ON pr.id_cargo = c.id_cargo
+GROUP BY pr.id_profissional, pr.nome, c.nome_cargo
+HAVING total_aplicacoes > 0
+ORDER BY total_aplicacoes DESC;
+
+-- 4. Carteira Vacinal do Paciente (Histórico Completo)
+
+SELECT
+p.nome as paciente,
+p.cpf,
+DATE_FORMAT(p.data_nascimento, '%d/%m/%Y') as nascimento,
+TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) as idade,
+v.nome_vacina,
+a.dose,
+DATE_FORMAT(a.data_aplicacao, '%d/%m/%Y') as data_vacina,
+pr.nome as profissional
+FROM Paciente p
+JOIN Aplicacao_Vacina a ON p.id_paciente = a.id_paciente
+JOIN Profissional pr ON a.id_profissional = pr.id_profissional
+JOIN Lote_Vacina l ON a.id_lote = l.id_lote
+JOIN Vacina v ON l.id_vacina = v.id_vacina
+ORDER BY p.nome, a.data_aplicacao DESC;
+
+-- 5. Busca Ativa - Pacientes Pendentes (Faixa Etária)
+
+SELECT
+p.nome,
+p.cpf,
+p.cns,
+TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) as idade,
+p.telefone,
+p.endereco
+FROM Paciente p
+WHERE p.id_paciente NOT IN (
+SELECT DISTINCT id_paciente FROM Aplicacao_Vacina
+WHERE YEAR(data_aplicacao) = YEAR(CURDATE())
+)
+AND TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) BETWEEN 0 AND 5
+ORDER BY idade;
+
+-- 6. Cobertura por Faixa Etária (Mensal)
+
+SELECT
+CASE
+WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 1 THEN '0-1 ano'
+WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 5 THEN '1-4 anos'
+WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 12 THEN '5-11 anos'
+WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 18 THEN '12-17 anos'
+WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 60 THEN '18-59 anos'
+ELSE '60+ anos'
+END as faixa_etaria,
+COUNT(*) as total_vacinados,
+COUNT(DISTINCT p.id_paciente) as pacientes_unicos
+FROM Aplicacao_Vacina a
+JOIN Paciente p ON a.id_paciente = p.id_paciente
+WHERE a.data_aplicacao >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+GROUP BY faixa_etaria
+ORDER BY
+CASE faixa_etaria
+WHEN '0-1 ano' THEN 1
+WHEN '1-4 anos' THEN 2
+WHEN '5-11 anos' THEN 3
+WHEN '12-17 anos' THEN 4
+WHEN '18-59 anos' THEN 5
+ELSE 6
+END;
+
+-- 7. Controle de Lotes (Estoque e Uso)
+
+SELECT
+v.nome_vacina,
+l.numero_lote,
+l.data_validade,
+l.quantidade_disponivel as estoque_restante,
+(SELECT COUNT(*) FROM Aplicacao_Vacina a2
+WHERE a2.id_lote = l.id_lote) as doses_aplicadas,
+DATE_FORMAT(l.data_validade, '%d/%m/%Y') as vence_em
+FROM Lote_Vacina l
+JOIN Vacina v ON l.id_vacina = v.id_vacina
+HAVING estoque_restante = 0 OR DATEDIFF(l.data_validade, CURDATE()) <= 30
+ORDER BY l.data_validade ASC;
+
+-- 8. Relatório por Cargo Profissional
+
+SELECT
+c.nome_cargo,
+COUNT(DISTINCT pr.id_profissional) as profissionais_ativos,
+COUNT(a.id_aplicacao) as total_aplicacoes,
+ROUND(AVG(COUNT(a.id_aplicacao)) / COUNT(DISTINCT pr.id_profissional), 1) as media_por_profissional
+FROM Cargo_Profissional c
+JOIN Profissional pr ON c.id_cargo = pr.id_cargo
+LEFT JOIN Aplicacao_Vacina a ON pr.id_profissional = a.id_profissional
+WHERE a.data_aplicacao >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+OR a.id_aplicacao IS NULL
+GROUP BY c.id_cargo, c.nome_cargo
+ORDER BY total_aplicacoes DESC;
+
+-- 9. Vacinação Diária (Dashboard)
+
+SELECT
+DATE_FORMAT(data_aplicacao, '%d/%m/%Y') as dia,
+COUNT(*) as doses_do_dia,
+COUNT(DISTINCT id_paciente) as pacientes_do_dia
+FROM Aplicacao_Vacina
+WHERE data_aplicacao >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+GROUP BY data_aplicacao
+ORDER BY data_aplicacao DESC;
+
+-- 10. Pacientes com Reforço Atrasado (Covid/Exemplo)
+
+SELECT
+p.nome,
+p.telefone,
+v.nome_vacina,
+MAX(a.dose) as ultima_dose,
+MAX(a.data_aplicacao) as ultima_data,
+DATEDIFF(CURDATE(), MAX(a.data_aplicacao)) as dias_atraso
+FROM Paciente p
+JOIN Aplicacao_Vacina a ON p.id_paciente = a.id_paciente
+JOIN Lote_Vacina l ON a.id_lote = l.id_lote
+JOIN Vacina v ON l.id_vacina = v.id_vacina
+WHERE v.nome_vacina LIKE '%Covid%'
+AND DATEDIFF(CURDATE(), MAX(a.data_aplicacao)) > 180
+GROUP BY p.id_paciente, p.nome, p.telefone, v.nome_vacina
+HAVING dias_atraso > 180;
+
+Abaixo está uma explicação detalhada, **consulta por consulta**, do que cada SQL faz no seu cenário de vacinação.[^3][^7][^9]
+
+***
+
+### 1. Relatório de histórico de vacinação do paciente
+
+```sql
+SELECT 
+    p.nome AS paciente,
+    v.nome_vacina,
+    a.dose,
+    a.data_aplicacao,
+    pr.nome AS profissional,
+    c.nome_cargo,
+    l.numero_lote
+FROM Aplicacao_Vacina a
+JOIN Paciente p ON a.id_paciente = p.id_paciente
+JOIN Profissional pr ON a.id_profissional = pr.id_profissional
+JOIN Cargo_Profissional c ON pr.id_cargo = c.id_cargo
+JOIN Lote_Vacina l ON a.id_lote = l.id_lote
+JOIN Vacina v ON l.id_vacina = v.id_vacina;
+```
+
+- **Objetivo**: mostra o “histórico individual” de cada aplicação de vacina, com dados do paciente, vacina, dose, data, profissional, cargo e número do lote.[^9]
+- **Como funciona**:
+    - `Aplicacao_Vacina` é a tabela central de doses aplicadas.
+    - Os `JOIN`s trazem informações relacionadas: paciente, profissional, cargo, lote e nome da vacina.
+    - O resultado é uma lista completa de todas as doses aplicadas, com contexto de quem tomou, o quê, quando, por quem e qual lote foi usado.[^7]
+
+***
+
+### 2. Relatório Geral de Aplicações (Cobertura Total)
+
+```sql
+SELECT 
+    COUNT(*) as total_aplicacoes,
+    MIN(data_aplicacao) as primeira_aplicacao,
+    MAX(data_aplicacao) as ultima_aplicacao,
+    DATE_FORMAT(AVG(DATEDIFF(CURDATE(), data_aplicacao)), '%d dias') as media_idade_aplicacao
+FROM Aplicacao_Vacina;
+```
+
+- **Objetivo**: dá uma visão macro da cobertura vacinal como um “resumo estatístico” do cadastro completo.[^9]
+- **Detalhes**:
+    - `COUNT(*)` conta todas as aplicações registradas.
+    - `MIN(data_aplicacao)` e `MAX(data_aplicacao)` indicam a primeira e a última data de aplicação do sistema.
+    - `DATEDIFF(CURDATE(), data_aplicacao)` calcula quantos dias separa cada aplicação de hoje; `AVG()` tira a média de tempo entre hoje e cada aplicação, como uma “idade média” das aplicações existentes.[^6][^10]
+
+***
+
+### 3. Vacinas Mais Aplicadas (Top 10)
+
+```sql
+SELECT 
+    v.nome_vacina,
+    COUNT(*) as total_doses,
+    GROUP_CONCAT(DISTINCT l.numero_lote) as lotes_utilizados
+FROM Aplicacao_Vacina a
+JOIN Lote_Vacina l ON a.id_lote = l.id_lote
+JOIN Vacina v ON l.id_vacina = v.id_vacina
+GROUP BY v.id_vacina, v.nome_vacina
+ORDER BY total_doses DESC
+LIMIT 10;
+```
+
+- **Objetivo**: mostrar quais vacinas tiveram mais doses aplicadas no sistema.[^3][^7]
+- **Como funciona**:
+    - `COUNT(*)` conta o número de aplicações por vacina.
+    - `GROUP BY v.id_vacina, v.nome_vacina` agrupa os registros por cada tipo de vacina.
+    - `GROUP_CONCAT(DISTINCT l.numero_lote)` monta uma lista de todos os lotes usados para aquela vacina.
+    - `ORDER BY total_doses DESC LIMIT 10` ordena do maior volume para o menor e retorna só as 10 vacinas mais aplicadas.[^7]
+
+***
+
+### 4. Produtividade por Profissional
+
+```sql
+SELECT 
+    pr.nome as profissional,
+    c.nome_cargo,
+    COUNT(*) as total_aplicacoes,
+    DATE_FORMAT(MIN(a.data_aplicacao), '%d/%m/%Y') as primeiro_dia,
+    DATE_FORMAT(MAX(a.data_aplicacao), '%d/%m/%Y') as ultimo_dia
+FROM Aplicacao_Vacina a
+JOIN Profissional pr ON a.id_profissional = pr.id_profissional
+JOIN Cargo_Profissional c ON pr.id_cargo = c.id_cargo
+GROUP BY pr.id_profissional, pr.nome, c.nome_cargo
+HAVING total_aplicacoes > 0
+ORDER BY total_aplicacoes DESC;
+```
+
+- **Objetivo**: medir a produtividade de cada profissional em termos de número de doses aplicadas, com intervalo de datas.[^3][^7]
+- **Detalhes**:
+    - `COUNT(*)` calcula quantas doses aquele profissional aplicou.
+    - `GROUP BY` por profissional e cargo cria uma linha por profissional.
+    - `HAVING total_aplicacoes > 0` garante que só apareçam profissionais que realmente aplicaram alguma dose.
+    - `ORDER BY total_aplicacoes DESC` organiza da maior produtividade para a menor.[^3]
+
+***
+
+### 5. Carteira Vacinal do Paciente (Histórico Completo)
+
+```sql
+SELECT 
+    p.nome as paciente,
+    p.cpf,
+    DATE_FORMAT(p.data_nascimento, '%d/%m/%Y') as nascimento,
+    TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) as idade,
+    v.nome_vacina,
+    a.dose,
+    DATE_FORMAT(a.data_aplicacao, '%d/%m/%Y') as data_vacina,
+    pr.nome as profissional
+FROM Paciente p
+JOIN Aplicacao_Vacina a ON p.id_paciente = a.id_paciente
+JOIN Profissional pr ON a.id_profissional = pr.id_profissional
+JOIN Lote_Vacina l ON a.id_lote = l.id_lote
+JOIN Vacina v ON l.id_vacina = v.id_vacina
+ORDER BY p.nome, a.data_aplicacao DESC;
+```
+
+- **Objetivo**: mostrar o histórico completo de vacinas de cada paciente, como se fosse a “carteira de vacinação” em formato de relatório.[^9]
+- **Detalhes**:
+    - Parte de `Paciente` e traz todas as aplicações associadas a cada paciente.
+    - Inclui dados de identificação (CPF), idade calculada com `TIMESTAMPDIFF`, nome da vacina, dose e data.
+    - `ORDER BY p.nome, a.data_aplicacao DESC` exibe primeiro o paciente, depois as doses da mais recente para a mais antiga.[^10][^6]
+
+***
+
+### 6. Busca Ativa – Pacientes Pendentes (Faixa Etária 0–5 anos)
+
+```sql
+SELECT 
+    p.nome,
+    p.cpf,
+    p.cns,
+    TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) as idade,
+    p.telefone,
+    p.endereco
+FROM Paciente p
+WHERE p.id_paciente NOT IN (
+    SELECT DISTINCT id_paciente FROM Aplicacao_Vacina 
+    WHERE YEAR(data_aplicacao) = YEAR(CURDATE())
+)
+AND TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) BETWEEN 0 AND 5
+ORDER BY idade;
+```
+
+- **Objetivo**: listar crianças de 0 a 5 anos que **não receberam nenhuma dose neste ano**, para “busca ativa” (campanha de localização e vacinação).[^5][^9]
+- **Detalhes**:
+    - `NOT IN (SELECT DISTINCT id_paciente ... WHERE YEAR(data_aplicacao) = YEAR(CURDATE()))` exclui pacientes que já tomaram ao menos uma dose no ano corrente.
+    - `TIMESTAMPDIFF(...) BETWEEN 0 AND 5` filtra por crianças de até 5 anos.
+    - O resultado é um conjunto de pacientes com idade, contato e endereço, prontos para serem chamados ou visitados.[^6][^10]
+
+***
+
+### 7. Cobertura por Faixa Etária (Mensal)
+
+```sql
+SELECT 
+    CASE 
+        WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 1 THEN '0-1 ano'
+        WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 5 THEN '1-4 anos'
+        WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 12 THEN '5-11 anos'
+        WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 18 THEN '12-17 anos'
+        WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 60 THEN '18-59 anos'
+        ELSE '60+ anos'
+    END as faixa_etaria,
+    COUNT(*) as total_vacinados,
+    COUNT(DISTINCT p.id_paciente) as pacientes_unicos
+FROM Aplicacao_Vacina a
+JOIN Paciente p ON a.id_paciente = p.id_paciente
+WHERE a.data_aplicacao >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+GROUP BY faixa_etaria
+ORDER BY 
+    CASE faixa_etaria
+        WHEN '0-1 ano' THEN 1
+        WHEN '1-4 anos' THEN 2
+        WHEN '5-11 anos' THEN 3
+        WHEN '12-17 anos' THEN 4
+        WHEN '18-59 anos' THEN 5
+        ELSE 6
+    END;
+```
+
+- **Objetivo**: consolidar quantos pacientes foram vacinados por faixa etária nos últimos 30 dias.[^5][^9]
+- **Como funciona**:
+    - `CASE` define faixas etárias a partir da idade calculada de cada paciente.
+    - Filtra apenas aplicações dos últimos 30 dias com `WHERE a.data_aplicacao >= DATE_SUB(...)`.
+    - `COUNT(*)` conta doses; `COUNT(DISTINCT p.id_paciente)` conta pessoas únicas, evitando que o mesmo paciente seja contado várias vezes por ter várias doses.
+    - `ORDER BY CASE ...` organiza a exibição das faixas na ordem lógica (0–1, 1–4, 5–11, etc.).[^10][^6]
+
+***
+
+### 8. Controle de Lotes (Estoque e Uso)
+
+```sql
+SELECT 
+    v.nome_vacina,
+    l.numero_lote,
+    l.data_validade,
+    l.quantidade_disponivel as estoque_restante,
+    (SELECT COUNT(*) FROM Aplicacao_Vacina a2 
+     WHERE a2.id_lote = l.id_lote) as doses_aplicadas,
+    DATE_FORMAT(l.data_validade, '%d/%m/%Y') as vence_em
+FROM Lote_Vacina l
+JOIN Vacina v ON l.id_vacina = v.id_vacina
+HAVING estoque_restante = 0 OR DATEDIFF(l.data_validade, CURDATE()) <= 30
+ORDER BY l.data_validade ASC;
+```
+
+- **Objetivo**: monitorar lotes de vacinas que estão acabando ou perto de vencer.[^5][^9]
+- **Detalhes**:
+    - `quantidade_disponivel` mostra o estoque atual do lote.
+    - A subconsulta `SELECT COUNT(*) ...` conta quantas doses do lote já foram aplicadas.
+    - `HAVING estoque_restante = 0` mostra lotes esgotados; `DATEDIFF(l.data_validade, CURDATE()) <= 30` mostra lotes que vencem em até 30 dias.
+    - `ORDER BY l.data_validade ASC` prioriza os lotes que vencem primeiro na lista.[^6][^10]
+
+***
+
+### 9. Relatório por Cargo Profissional
+
+```sql
+SELECT 
+    c.nome_cargo,
+    COUNT(DISTINCT pr.id_profissional) as profissionais_ativos,
+    COUNT(a.id_aplicacao) as total_aplicacoes,
+    ROUND(AVG(COUNT(a.id_aplicacao)) / COUNT(DISTINCT pr.id_profissional), 1) as media_por_profissional
+FROM Cargo_Profissional c
+JOIN Profissional pr ON c.id_cargo = pr.id_cargo
+LEFT JOIN Aplicacao_Vacina a ON pr.id_profissional = a.id_profissional
+WHERE a.data_aplicacao >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+    OR a.id_aplicacao IS NULL
+GROUP BY c.id_cargo, c.nome_cargo
+ORDER BY total_aplicacoes DESC;
+```
+
+- **Objetivo**: analisar a produtividade por tipo de cargo (ex.: enfermeiros, técnicos, médicos).[^7][^3]
+- **Detalhes**:
+    - `COUNT(DISTINCT pr.id_profissional)` conta quantos profissionais há em cada cargo.
+    - `COUNT(a.id_aplicacao)` conta o total de aplicações daquele cargo nos últimos 30 dias.
+    - `LEFT JOIN` garante que cargos sem aplicações também apareçam (com `NULL` em `a`).
+    - A linha `AVG(COUNT(...)) / ...` calcula, em média, quantas doses cada profissional desse cargo aplicou no período.[^10][^6]
+
+***
+
+### 10. Vacinação Diária (Dashboard)
+
+```sql
+SELECT 
+    DATE_FORMAT(data_aplicacao, '%d/%m/%Y') as dia,
+    COUNT(*) as doses_do_dia,
+    COUNT(DISTINCT id_paciente) as pacientes_do_dia
+FROM Aplicacao_Vacina
+WHERE data_aplicacao >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+GROUP BY data_aplicacao
+ORDER BY data_aplicacao DESC;
+```
+
+- **Objetivo**: produzir um “dashboard” de vacinação diária dos últimos 7 dias.[^5][^9]
+- **Detalhes**:
+    - `WHERE data_aplicacao >= DATE_SUB(..., INTERVAL 7 DAY)` filtra apenas os últimos 7 dias de aplicação.
+    - `GROUP BY data_aplicacao` cria uma linha por dia.
+    - `COUNT(*)` mostra o volume de doses; `COUNT(DISTINCT id_paciente)` mostra quantos pacientes únicos foram atendidos por dia.
+    - `ORDER BY data_aplicacao DESC` prioriza os dias mais recentes na lista.[^6][^10]
+
+***
+
+### 11. Pacientes com Reforço Atrasado (Covid – Exemplo)
+
+```sql
+SELECT 
+    p.nome,
+    p.telefone,
+    v.nome_vacina,
+    MAX(a.dose) as ultima_dose,
+    MAX(a.data_aplicacao) as ultima_data,
+    DATEDIFF(CURDATE(), MAX(a.data_aplicacao)) as dias_atraso
+FROM Paciente p
+JOIN Aplicacao_Vacina a ON p.id_paciente = a.id_paciente
+JOIN Lote_Vacina l ON a.id_lote = l.id_lote
+JOIN Vacina v ON l.id_vacina = v.id_vacina
+WHERE v.nome_vacina LIKE '%Covid%' 
+    AND DATEDIFF(CURDATE(), MAX(a.data_aplicacao)) > 180
+GROUP BY p.id_paciente, p.nome, p.telefone, v.nome_vacina
+HAVING dias_atraso > 180;
+```
+
+- **Objetivo**: identificar pacientes vacinados contra Covid cuja última dose foi há mais de 180 dias, sugerindo necessidade de reforço.[^9][^5]
+- **Detalhes**:
+    - `WHERE v.nome_vacina LIKE '%Covid%'` filtra apenas vacinas de Covid.
+    - `MAX(a.dose)` e `MAX(a.data_aplicacao)` pegam a dose mais recente e data mais recente de cada paciente.
+    - `DATEDIFF(CURDATE(), MAX(...))` calcula quantos dias se passaram desde a última dose.
+    - `GROUP BY` separa por paciente e tipo de vacina; `HAVING dias_atraso > 180` garante que só apareçam os com mais de 180 dias sem reforço.[^10][^6]
+
+***
+
+Se quiser, posso montar um **resumo em tabela** comparando objetivo, tabela principal e função mais importante de cada consulta para usar como material de aula.
+<span style="display:none">[^1][^2][^4][^8]</span>
+
+<div align="center">⁂</div>
+
+[^1]: https://www.youtube.com/watch?v=Z54BBEALMnA
+
+[^2]: https://help.tableau.com/current/pro/desktop/pt-br/functions_functions_date.htm
+
+[^3]: https://www.devmedia.com.br/exemplos-com-group-by-e-com-a-clausula-having-totalizando-dados-sql-server-2008-parte-2/19839
+
+[^4]: http://www.inf.ufsc.br/~r.mello/ine5613/sql2.doc
+
+[^5]: https://www.em.com.br/app/noticia/saude-e-bem-viver/2023/05/03/interna_bem_viver,1489207/entenda-como-os-dados-de-vacinacao-da-covid-sao-registrados.shtml
+
+[^6]: https://www.macoratti.net/14/06/tsql_tdh1.htm
+
+[^7]: https://www.homehost.com.br/blog/wordpress/group-by-sql/
+
+[^8]: https://pt.scribd.com/doc/76811327/Guia-rapido-para-consultas-SQL
+
+[^9]: https://www.monografias.ufop.br/bitstream/35400000/2853/9/MONOGRAFIA_DesenvolvimentoM%C3%B3duloVacina%C3%A7%C3%A3o.pdf
+
+[^10]: https://learn.microsoft.com/pt-br/sql/t-sql/functions/datediff-transact-sql?view=sql-server-ver17
+
