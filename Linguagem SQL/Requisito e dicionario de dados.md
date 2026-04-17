@@ -1,10 +1,4 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 
-# sim
-
-Perfeito! Vou montar para você um **documento em Markdown** (pronto para convertar em PDF ou usar como anexo de projeto de banco de dados) com **requisitos funcionais, não funcionais e dicionário de dados** de um **sistema de vacinação**, já estruturado para uso em aula ou projeto formal.
-
-***
 
 ## **Projeto de Banco de Dados – Sistema de Vacinação**
 
