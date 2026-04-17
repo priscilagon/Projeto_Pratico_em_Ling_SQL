@@ -104,13 +104,3 @@
 ```
 
 
-***
-
-Com esse Markdown, você pode:
-
-- copiar para um arquivo `.md` e converter em **PDF** (usando `pandoc` ou gerador online);
-- usar como **anexo de projeto de BD**, entregável a alunos ou para avaliação final;
-- aproveitar como modelo de dicionário de dados para outros sistemas (restaurante, locadora, escola, etc.).
-
-Se quiser, posso montar uma **versão compacta só com o dicionário de dados em tabela SQL comentado** (sem Markdown, pronto para colar no MySQL Workbench como documentação). Quer que eu faça isso também?
-
