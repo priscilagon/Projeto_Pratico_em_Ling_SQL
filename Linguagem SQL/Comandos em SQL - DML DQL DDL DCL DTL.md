@@ -1,0 +1,199 @@
+# Linguagem SQL
+
+SQL é uma linguagem simples para trabalhar com bancos de dados relacionais, usada para consultar, inserir, alterar e remover dados. Ela é padrão em vários sistemas como MySQL e serve para provas e projetos práticos no ensino técnico.
+
+## Objetivo Geral
+
+SQL (Structured Query Language) permite comandos para manipular dados em tabelas de bancos relacionais. Vai além de consultas: insere, remove e atualiza informações. Foco em provas é no SQL tradicional, ignorando extras de SGBDs específicos.
+
+**Atenção:** SQL Server (da Microsoft) usa SQL, mas não confunda: é só o nome do produto. SQL é a linguagem universal.
+
+## Classificação dos Comandos
+
+SQL divide comandos em categorias claras:
+
+- **DML (Data Manipulation Language):** Manipula dados nas tabelas (sem alterar estrutura).
+- **DQL (Data Query Language):** Consulta dados (alguns chamam de DML, mas prefira DQL em provas).
+- **DDL (Data Definition Language):** Cria/altera estruturas como tabelas.
+- **DCL (Data Control Language):** Controla permissões e segurança.
+- **DTL (Data Transaction Language):** Gerencia transações (confirma ou desfaz).
+
+
+## Comandos DML
+
+Manipulam dados. Exemplos com tabela "Colaborador":
+
+
+| Comando | Descrição | Sintaxe | Exemplo |
+| :-- | :-- | :-- | :-- |
+| INSERT | Insere dados (com colunas) | `INSERT INTO tabela (col1, col2) VALUES (val1, val2)` | `INSERT INTO Colaborador (nome, cidade) VALUES ('Cristiane', 'Rio de Janeiro')` |
+| INSERT | Insere sem colunas (ordem exata) | `INSERT INTO tabela VALUES (val1, val2)` | `INSERT INTO Colaborador VALUES (1, 'Cristiane', '18/01/1985', 'Rio de Janeiro')` |
+| UPDATE | Atualiza dados (WHERE evita tudo) | `UPDATE tabela SET col=val [WHERE cond]` | `UPDATE Colaborador SET cidade='Florianópolis' WHERE nome='Cristiane'` |
+| DELETE | Remove dados (WHERE evita tudo) | `DELETE FROM tabela [WHERE cond]` | `DELETE FROM Colaborador WHERE nome='Cristiane'` |
+
+## Comandos DQL
+
+Focam em consultas com SELECT:
+
+
+| Comando | Descrição | Sintaxe | Exemplo |
+| :-- | :-- | :-- | :-- |
+| SELECT | Todos campos | `SELECT * FROM tabela [WHERE cond]` | `SELECT * FROM Colaborador WHERE nome='Cristiane'` |
+| SELECT | Campos específicos | `SELECT col1, col2 FROM tabela [WHERE cond]` | `SELECT nome, cidade FROM Colaborador` |
+
+## Funções de Agregação
+
+Agrupam dados com GROUP BY e filtram com HAVING. Ex: COUNT, SUM, AVG, MAX, MIN.
+
+
+| Função | Descrição |
+| :-- | :-- |
+| COUNT | Conta linhas |
+| SUM | Soma valores |
+| AVG | Média |
+| MAX | Maior valor |
+| MIN | Menor valor |
+
+Exemplos:
+
+
+| Comando | Descrição | Exemplo |
+| :-- | :-- | :-- |
+| SELECT + Agregação | Agrupa com GROUP BY | `SELECT COUNT(*), cidade FROM Colaborador GROUP BY cidade` |
+| SELECT + HAVING | Filtra grupos | `SELECT COUNT(*), cidade FROM Colaborador GROUP BY cidade HAVING COUNT(*) > 10` |
+
+## Ordenação (ORDER BY)
+
+Sempre no final da consulta. ASC (crescente, padrão) ou DESC.
+
+
+| Comando | Descrição | Exemplo |
+| :-- | :-- | :-- |
+| SELECT + ORDER | Ordena simples | `SELECT * FROM Colaborador ORDER BY nome, cidade ASC` |
+| SELECT + Agregação + ORDER | Com funções | `SELECT COUNT(*), cidade FROM Colaborador GROUP BY cidade HAVING COUNT(*) > 10 ORDER BY cidade DESC` |
+
+Junções ficam para outra aula.
+
+## Comandos DDL
+
+Alteram estruturas (ex: tabelas):
+
+
+| Comando | Descrição | Sintaxe | Exemplo |
+| :-- | :-- | :-- | :-- |
+| CREATE | Cria tabela | `CREATE TABLE tabela (col tipo)` | `CREATE TABLE Colaborador (id int, nome varchar, dataNascimento date, cidade varchar)` |
+| CREATE AS | Cria de consulta | `CREATE TABLE nova AS SELECT ... FROM antiga [WHERE]` | `CREATE TABLE Colaborador AS SELECT * FROM Pessoa WHERE status='aprovado'` |
+| ALTER | Adiciona/remove/renomeia | `ALTER TABLE tabela [ADD/DROP/RENAME]` | `ALTER TABLE Colaborador ADD experiencia int` |
+| TRUNCATE | Apaga dados, mantém estrutura | `TRUNCATE TABLE tabela` | `TRUNCATE TABLE Colaborador` |
+| DROP | Apaga tudo | `DROP TABLE tabela` | `DROP TABLE Colaborador` |
+
+**Atenção:** TRUNCATE é DDL (estrutura fica), DELETE é DML.
+
+## Comandos DCL
+
+Controlam acessos:
+
+
+| Comando | Descrição | Sintaxe | Exemplo |
+| :-- | :-- | :-- | :-- |
+| GRANT | Concede privilégio | `GRANT priv ON tabela TO user` | `GRANT SELECT ON Colaborador TO estrategia` |
+| GRANT | Com extensão | `GRANT priv ON tabela TO user WITH GRANT OPTION` | `GRANT SELECT ON Colaborador TO estrategia WITH GRANT OPTION` |
+| REVOKE | Revoga | `REVOKE priv ON tabela FROM user` | `REVOKE SELECT ON Colaborador FROM estrategia` |
+
+## Comandos DTL
+
+Gerenciam transações:
+
+
+| Comando | Descrição |
+| :-- | :-- |
+| COMMIT | Confirma mudanças |
+| ROLLBACK | Desfaz mudanças |
+
+
+Exemplos de junções SQL aplicados ao sistema de vacinação usam tabelas como Paciente, Aplicacao_Vacina, Profissional, Vacina e Lote_Vacina. Elas combinam dados para relatórios reais, como histórico por paciente ou cobertura por faixa etária.
+
+## Tabelas Exemplo
+
+Baseado na modelagem normalizada (3FN) do histórico: Paciente (id_paciente, nome), Aplicacao_Vacina (id_aplicacao, id_paciente, id_profissional, id_vacina, dose, data_aplicacao), Profissional (id_profissional, nome), Vacina (id_vacina, nome_vacina).
+
+Dados de teste:
+- Pacientes: Ana (1), João (2), Maria (3).
+- Aplicacoes: Ana-COVID dose1 (prof1), João-Gripe dose1 (prof2), Maria sem aplicação.
+- Profissionais: Dr. Silva (1), Enfermeira Ana (2).
+- Vacinas: COVID (1), Gripe (2). 
+
+## INNER JOIN: Histórico Completo
+
+Só registros com matches (exclui pacientes sem vacina).
+
+```sql
+SELECT p.nome AS paciente, v.nome_vacina, a.dose, a.data_aplicacao, pr.nome AS profissional
+FROM Aplicacao_Vacina a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Profissional pr ON a.id_profissional = pr.id_profissional
+INNER JOIN Vacina v ON a.id_vacina = v.id_vacina
+WHERE v.nome_vacina = 'COVID';
+```
+
+Resultado: Ana, COVID, dose1, 2026-04-01, Dr. Silva (João e Maria excluídos).
+
+## LEFT JOIN: Todos Pacientes
+
+Lista todos pacientes + vacinas (NULL se sem aplicação).
+
+```sql
+SELECT p.nome AS paciente, v.nome_vacina, a.dose
+FROM Paciente p
+LEFT JOIN Aplicacao_Vacina a ON p.id_paciente = a.id_paciente
+LEFT JOIN Vacina v ON a.id_vacina = v.id_vacina
+ORDER BY p.nome;
+```
+
+Resultado: Ana-COVID-dose1; João-Gripe-dose1; Maria-NULL-NULL.
+
+## RIGHT JOIN: Todos Profissionais
+
+Foca profissionais + aplicações (raro, mas útil para auditoria).
+
+```sql
+SELECT pr.nome AS profissional, p.nome AS paciente, v.nome_vacina
+FROM Aplicacao_Vacina a
+RIGHT JOIN Profissional pr ON a.id_profissional = pr.id_profissional
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Vacina v ON a.id_vacina = v.id_vacina;
+```
+
+Resultado: Dr. Silva-Ana-COVID; Enfermeira Ana-João-Gripe.
+
+## FULL OUTER JOIN: Cobertura Total
+
+Tudo das tabelas (simula com UNION em MySQL).
+
+```sql
+SELECT p.nome AS paciente, v.nome_vacina FROM Paciente p
+LEFT JOIN Aplicacao_Vacina a ON p.id_paciente = a.id_paciente
+LEFT JOIN Vacina v ON a.id_vacina = v.id_vacina
+UNION
+SELECT NULL, v.nome_vacina FROM Vacina v
+LEFT JOIN Aplicacao_Vacina a ON v.id_vacina = a.id_vacina
+WHERE a.id_vacina IS NULL;
+```
+
+
+## Múltiplos JOINs: Relatório por Faixa Etária
+
+```sql
+SELECT 
+    CASE 
+        WHEN TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) < 5 THEN '0-4 anos'
+        ELSE '5+ anos'
+    END AS faixa_etaria,
+    COUNT(a.id_aplicacao) AS total_aplicacoes,
+    v.nome_vacina
+FROM Paciente p
+LEFT JOIN Aplicacao_Vacina a ON p.id_paciente = a.id_paciente
+LEFT JOIN Vacina v ON a.id_vacina = v.id_vacina
+GROUP BY faixa_etaria, v.nome_vacina
+ORDER BY total_aplicacoes DESC;
+```
