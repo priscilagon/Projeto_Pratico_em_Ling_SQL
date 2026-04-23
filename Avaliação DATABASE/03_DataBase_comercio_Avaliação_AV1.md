@@ -79,3 +79,7 @@ SELECT 'SALARIOS', COUNT(*) FROM salarios
 UNION ALL
 SELECT 'VENDAS', COUNT(*) FROM vendas;
 ```
+
+Avaliação anotações em SQL - Entregue no [Formulário do Google](https://forms.gle/ea7NT2RAUxpPrUSZ8)
+
+> Prazo até dia 23/04/206.
