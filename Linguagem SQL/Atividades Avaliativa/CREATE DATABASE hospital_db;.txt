@@ -1,0 +1,72 @@
+CREATE DATABASE hospital_db;
+USE hospital_db;
+
+-- Tabelas principais (mantidas iguais)
+CREATE TABLE Usuario (
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    nome_usuario VARCHAR(100) NOT NULL,
+    login VARCHAR(50) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    perfil VARCHAR(50) NOT NULL,
+    status VARCHAR(20) DEFAULT 'ativo'
+);
+
+CREATE TABLE Paciente (
+    id_paciente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(120) NOT NULL,
+    cpf VARCHAR(14) UNIQUE,
+    cns VARCHAR(20) UNIQUE,
+    data_nascimento DATE NOT NULL,
+    sexo CHAR(1),
+    telefone VARCHAR(20),
+    endereco VARCHAR(150)
+);
+
+CREATE TABLE Cargo_Profissional (
+    id_cargo INT PRIMARY KEY AUTO_INCREMENT,
+    nome_cargo VARCHAR(60) NOT NULL UNIQUE
+);
+
+CREATE TABLE Profissional (
+    id_profissional INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(120) NOT NULL,
+    cpf VARCHAR(14) NOT NULL UNIQUE,
+    cns VARCHAR(20),
+    registro_conselho VARCHAR(30),
+    id_cargo INT NOT NULL,
+    id_usuario INT UNIQUE,
+    FOREIGN KEY (id_cargo) REFERENCES Cargo_Profissional(id_cargo),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+-- Tabelas adaptadas para medicamentos (era vacinas)
+CREATE TABLE Medicamento (
+    id_medicamento INT PRIMARY KEY AUTO_INCREMENT,
+    nome_medicamento VARCHAR(100) NOT NULL,
+    fabricante VARCHAR(100),
+    descricao VARCHAR(200)
+);
+
+CREATE TABLE Lote_Medicamento (
+    id_lote_medicamento INT PRIMARY KEY AUTO_INCREMENT,
+    numero_lote VARCHAR(50) NOT NULL UNIQUE,
+    data_validade DATE NOT NULL,
+    quantidade_disponivel INT NOT NULL,
+    id_medicamento INT NOT NULL,
+    FOREIGN KEY (id_medicamento) REFERENCES Medicamento(id_medicamento)
+);
+
+CREATE TABLE Aplicacao_Medicamento (
+    id_aplicacao INT PRIMARY KEY AUTO_INCREMENT,
+    data_aplicacao DATE NOT NULL,
+    dose VARCHAR(30) NOT NULL,
+    via_aplicacao VARCHAR(50),
+    local_aplicacao VARCHAR(50),
+    observacao VARCHAR(255),
+    id_paciente INT NOT NULL,
+    id_profissional INT NOT NULL,
+    id_lote_medicamento INT NOT NULL,
+    FOREIGN KEY (id_paciente) REFERENCES Paciente(id_paciente),
+    FOREIGN KEY (id_profissional) REFERENCES Profissional(id_profissional),
+    FOREIGN KEY (id_lote_medicamento) REFERENCES Lote_Medicamento(id_lote_medicamento)
+);
