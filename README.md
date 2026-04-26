@@ -1,6 +1,6 @@
 # COMPONENTE CURRICULAR: Prática Profissional Supervisionada Nível II - Projeto de Gerenciamento de Banco de Dados - 80h
 
-# COMPETÊNCIA TÉCNICA
+## COMPETÊNCIA TÉCNICA
 Executar processos para modelar a arquitetura cliente-servidor para aplicar o resultado da modelagem de dados no Projeto de Gerenciamento de Banco de Dados – SGBD;
 
 Utilizar os recursos para construir o projeto de banco de dados;
