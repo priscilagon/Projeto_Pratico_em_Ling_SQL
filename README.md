@@ -64,7 +64,7 @@ Autoconfiança;
 
 Tolerância à frustação.
 
-# Referência básica:
+# Referência Básica:
 1. ALVES, William Pereira. Banco de Dados: Teoria e Desenvolvimento. 2. ed. Editora: Érica. 2020.
 2. HEUSER, Carlos Alberto. Projeto de Banco de Dados. 6.ed. Editora: Bookman, 2009.
 3. PUGA, Sandra. FRANÇA, Edson. GOYA, Milton. Banco de dados implementação em SQL, PL/SQL e Oracle 11g. 1.ed. Editora: Person, 2013.
