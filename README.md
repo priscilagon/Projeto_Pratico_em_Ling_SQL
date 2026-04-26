@@ -64,12 +64,10 @@ Autoconfiança;
 
 Tolerância à frustação.
 
-## ReferênciaBásica:
+## Referências
 1. ALVES, William Pereira. Banco de Dados: Teoria e Desenvolvimento. 2. ed. Editora: Érica. 2020.
 2. HEUSER, Carlos Alberto. Projeto de Banco de Dados. 6.ed. Editora: Bookman, 2009.
-3. PUGA, Sandra. FRANÇA, Edson. GOYA, Milton. Banco de dados implementação em SQL, PL/SQL e Oracle 11g. 1.ed. Editora: Person, 2013.
-
-## Referência Complementar:
-1. MANZANO, José Augusto N. Z. Microsoft SQL Server 2012 Express. Guia Prático e Interativo. Editora: Érica. 2012.
-2. Microsoft MySQL Server. Disponível em: < https://www.microsoft.com/pt-br/sql-server/sql-server-downloads>. Acesso em: 10/12/2021.
-3. MILANI, André. Construindo Aplicações Web com PHP e MySQL. 2. ed. Editora: NOVATEC, 2010.
+3. PUGA, Sandra. FRANÇA, Edson. GOYA, Milton. Banco de dados implementação em SQL, PL/SQL e Oracle 11g. 1.ed. Editora: Person, 201
+4. MANZANO, José Augusto N. Z. Microsoft SQL Server 2012 Express. Guia Prático e Interativo. Editora: Érica. 2012.
+5. Microsoft MySQL Server. Disponível em: < https://www.microsoft.com/pt-br/sql-server/sql-server-downloads>. Acesso em: 10/12/2021.
+6. MILANI, André. Construindo Aplicações Web com PHP e MySQL. 2. ed. Editora: NOVATEC, 2010.
