@@ -1,5 +1,6 @@
 # COMPONENTE CURRICULAR: Prática Profissional Supervisionada Nível II - Projeto de Gerenciamento de Banco de Dados - 80h
 
+Avaliação AV2 Link: [https://forms.gle/xgq5aUn77U5aXrDW7]
 
 Avaliação AV1 Link: [https://forms.gle/1xHTmEshuGFYz4xX7]
 
