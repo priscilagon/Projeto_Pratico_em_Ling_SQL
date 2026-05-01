@@ -1,0 +1,46 @@
+Avaliação AV1 - Modelo 01
+Questão 01
+SELECT titulo, autor_id 
+	FROM livros; 
+
+Questão 02
+SELECT valor_salario 
+	FROM salarios 
+	WHERE valor_salario > 3000;
+
+Questão 03
+SELECT * FROM vendas 
+	ORDER BY valor_venda DESC;
+
+Questão 04
+SELECT AVG(nota) AS media 
+	FROM alunos;
+
+Questão 05
+SELECT id_venda, SUM(valor_venda) 
+	FROM vendas 
+	GROUP BY cliente;
+
+Questão 06
+SELECT titulo 
+	FROM livros 
+	WHERE ano_publicacao > 1950;
+
+Questão 07
+SELECT * FROM livros 
+	WHERE titulo LIKE 'H%';
+
+Questão 08
+SELECT * FROM livros 
+	ORDER BY ano_publicacao DESC, titulo ASC;
+
+Questão 09
+SELECT COUNT(*) AS total_livros 
+	FROM livros;
+
+Questão 10
+SELECT a.nome, 
+	COUNT(l.id) as qtd_livros 
+	FROM autores a 
+	sLEFT JOIN livros l ON a.id = l.autor_id 
+	GROUP BY a.id ORDER BY qtd_livros DESC;

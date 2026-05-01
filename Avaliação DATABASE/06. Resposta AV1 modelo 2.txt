@@ -1,0 +1,23 @@
+Avaliação AV1 - Modelo 02
+Questão 01 
+	SELECT nome 
+	FROM paciente;
+
+Q2-- SELECT nome FROM autores WHERE nome LIKE 'A%';
+
+Q3-- SELECT id_funcionario, valor_salario FROM salarios ORDER BY valor_salario ASC, id_salario ASC;
+
+Q4-- SELECT COUNT(*) AS total_consultas FROM consultas;
+
+Q5-- SELECT d.nome_disciplina, ROUND(AVG(n.media_final), 2) AS media_disciplina, COUNT(n.id_nota) AS total_notas FROM notas n JOIN disciplinas d ON n.id_disciplina = d.id_disciplina GROUP BY d.id_disciplina, d.nome_disciplina ORDER BY media_disciplina DESC; 
+
+Q6-- SELECT I.*, a.nome FROM livros I JOIN autores a ON I.autor_id = a.id WHERE a.nome = 'J.K. Rowling'; 
+
+Q7-- SELECT a.nome, COUNT(l.id) AS total_livros FROM autores a JOIN livros l ON a.id = l.autor_id WHERE a.nacionalidade = 'Brasileira' GROUP BY a.id, a.nome HAVING COUNT(l.id) > 1 ORDER BY total_livros DESC;
+
+Q8-- SELECT a.nome, ROUND(AVG(l.ano_publicacao), 0) AS media_ano, COUNT(l.id) AS total_livros FROM autores a LEFT JOIN livros l ON a.id = l.autor_id GROUP BY a.id, a.nome ORDER BY media_ano;
+
+Q9-- SELECT a.nome, a.nacionalidade FROM autores a LEFT JOIN livros l ON a.id = l.autor_id WHERE l.id IS NULL;
+
+Q10-- SELECT  a.nome AS autor, l.titulo AS titulo, l.ano_publicacao
+FROM livros l JOIN autores a ON l.autor_id = a.id ORDER BY a.nome ASC, l.titulo ASC;
