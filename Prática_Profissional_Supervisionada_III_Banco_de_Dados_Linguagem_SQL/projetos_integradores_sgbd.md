@@ -45,7 +45,7 @@ O sistema pode trabalhar com entidades como **Cliente, Compra, Locação, Catego
 
 - **Turma:** Técnico de Nível Médio em Informática 2025.1
 - **Professor(a):** Priscila Gonçalves
-- **Data de entrega:** 18/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
+- **Data de entrega:** 11/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
 - **Entrega de versões do relatório, toda sexta-feira ao termino da aula.**
 - **Tema escolhido:** Tema 2
 - **Líder do grupo:** 
@@ -80,7 +80,7 @@ Com entidades como **Aluno, Turma, Professor, Matéria e Nota**, o projeto possi
 
 - **Turma:** Técnico de Nível Médio em Informática 2025.1
 - **Professor(a):** Priscila Gonçalves
-- **Data de entrega:** 18/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
+- **Data de entrega:** 11/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
 - **Entrega de versões do relatório, toda sexta-feira ao termino da aula.**
 - **Tema escolhido:** Tema 3
 - **Líder do grupo:** 
@@ -113,7 +113,7 @@ As entidades **Produto, Fornecedor, Venda e Estoque** permitem modelar entradas 
 
 - **Turma:** Técnico de Nível Médio em Informática 2025.1
 - **Professor(a):** Priscila Gonçalves
-- **Data de entrega:** 18/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
+- **Data de entrega:** 11/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
 - **Entrega de versões do relatório, toda sexta-feira ao termino da aula.**
 - **Tema escolhido:** Tema 4
 - **Líder do grupo:** 
@@ -147,7 +147,7 @@ As entidades **Paciente, Médico, Consulta, Prontuário e Medicamento** favorece
 
 - **Turma:** Técnico de Nível Médio em Informática 2025.1
 - **Professor(a):** Priscila Gonçalves
-- **Data de entrega:** 18/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
+- **Data de entrega:** 11/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
 - **Entrega de versões do relatório, toda sexta-feira ao termino da aula.**
 - **Tema escolhido:** Tema 5
 - **Líder do grupo:** 
@@ -181,7 +181,7 @@ Com entidades como **Livro, Usuário, Empréstimo e Multa**, o sistema permite r
 
 - **Turma:** Técnico de Nível Médio em Informática 2025.1
 - **Professor(a):** Priscila Gonçalves
-- **Data de entrega:** 18/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
+- **Data de entrega:** 11/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
 - **Entrega de versões do relatório, toda sexta-feira ao termino da aula.**
 - **Tema escolhido:** Tema 6
 - **Líder do grupo:** 
@@ -216,7 +216,7 @@ As entidades **Mesa, Item, Pedido e Garçom** permitem simular um sistema comerc
 
 - **Turma:** Técnico de Nível Médio em Informática 2025.1
 - **Professor(a):** Priscila Gonçalves
-- **Data de entrega:** 18/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
+- **Data de entrega:** 11/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
 - **Entrega de versões do relatório, toda sexta-feira ao termino da aula.**
 - **Tema escolhido:** Tema 7
 - **Líder do grupo:** 
@@ -250,7 +250,7 @@ As entidades **Veículo, Cliente, Serviço, Peça e Ordem** possibilitam trabalh
 
 - **Turma:** Técnico de Nível Médio em Informática 2025.1
 - **Professor(a):** Priscila Gonçalves
-- **Data de entrega:** 18/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
+- **Data de entrega:** 11/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
 - **Entrega de versões do relatório, toda sexta-feira ao termino da aula.**
 - **Tema escolhido:** Tema 8
 - **Líder do grupo:** 
