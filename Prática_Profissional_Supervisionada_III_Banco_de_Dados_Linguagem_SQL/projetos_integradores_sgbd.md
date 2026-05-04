@@ -10,8 +10,8 @@ O plano também estabelece que a apresentação final deve contemplar contextual
 
 - **Turma:** Técnico de Nível Médio em Informática 2025.1
 - **Professor(a):** Priscila Gonçalves
-- **Data de entrega:** 18/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
-- **Entrega de versões do relatório, toda sexta-feira ao termino da aula.**
+- **Data de entrega:** 11/05/2026 - Relatório Técnico: Impresso e encadernação ou grampeado.
+- **Entrega de versões do relatório: 06/05/2026 termino da aula.**
 - **Tema escolhido:** Tema 1
 - **Líder do grupo:** 
 
