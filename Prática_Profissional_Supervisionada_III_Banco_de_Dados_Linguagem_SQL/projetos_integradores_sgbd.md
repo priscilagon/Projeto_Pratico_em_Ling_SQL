@@ -4,6 +4,8 @@ Documento de organização dos temas de projetos integradores do componente **Pr
 
 O plano também estabelece que a apresentação final deve contemplar contextualização do sistema, DER, demonstração de operações CRUD, execução de procedure ou trigger e relatório em Python, além de documentação técnica e dicionário de dados.
 
+
+LINK: https://docs.google.com/spreadsheets/d/1CoC2VqG8fB9aeopMoSdMeHH2X1LWzoBSXJmD5MWgbVI/edit?usp=sharing
 ---
 
 ## Orientações gerais do grupo
