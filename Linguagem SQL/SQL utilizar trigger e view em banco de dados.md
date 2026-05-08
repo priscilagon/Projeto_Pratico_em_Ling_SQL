@@ -1,4 +1,4 @@
-# Como Utilizar trigger e view em banco de dados no sistema de vinacao
+# Como Utilizar trigger e view em banco de dados no sistema de vinação
 
 ## VIEW: Resumo de Vacinação
 
